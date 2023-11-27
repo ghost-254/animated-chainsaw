@@ -1,0 +1,104 @@
+import matplotlib.pyplot as plt
+import time
+import random
+
+# Recording the start time
+start_time = time.time()
+
+# A function to perform MergeSort on an array and count inversions during the merge step
+def merge_sort_with_inversions(arr):
+    """
+    Performing MergeSort on an array and count inversions during the merge step.
+
+    Parameters:
+    - arr: List[int], the input array
+
+    Returns:
+    - List[int], the sorted array
+    - int, the inversion count
+    """
+    if len(arr) <= 1:
+        return arr, 0  # Base case: already sorted and no inversions
+    
+    mid = len(arr) // 2
+    left, inv_count_left = merge_sort_with_inversions(arr[:mid])
+    right, inv_count_right = merge_sort_with_inversions(arr[mid:])
+    
+    merged, inv_count_merge = merge_with_inversions(left, right)
+    
+    inv_count_total = inv_count_left + inv_count_right + inv_count_merge
+    
+    return merged, inv_count_total
+
+# A function to merge two sorted arrays and count inversions
+def merge_with_inversions(left, right):
+    """
+    Merging two sorted arrays and count inversions.
+
+    Parameters:
+    - left: List[int], the left sorted array
+    - right: List[int], the right sorted array
+
+    Returns:
+    - List[int], the merged sorted array
+    - int, the inversion count
+    """
+    merged = []
+    inv_count = 0
+    i = j = 0
+
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            merged.append(left[i])
+            i += 1
+        else:
+            merged.append(right[j])
+            inv_count += len(left) - i
+            j += 1
+
+    merged.extend(left[i:])
+    merged.extend(right[j:])
+    
+    return merged, inv_count
+
+def generate_random_array(size):
+    """
+    Generates a random array of the given size.
+
+    Parameters:
+    - size: int, the size of the array
+
+    Returns:
+    - List[int], the random array
+    """
+    return [random.randint(1, 100) for _ in range(size)]
+
+# Example usage:
+arr = generate_random_array(10)  # Size can be changed as needed
+sorted_arr, inversion_count = merge_sort_with_inversions(arr)
+
+# Plotting the Original Array and the Sorted Array on a graph
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 2, 1)
+plt.bar(range(len(arr)), arr, color='blue')
+plt.title('Original Array')
+
+plt.subplot(1, 2, 2)
+plt.bar(range(len(sorted_arr)), sorted_arr, color='green')
+plt.title('Sorted Array')
+
+plt.show()
+
+print("Original Array:", arr)
+print("Sorted Array:", sorted_arr)
+print("Inversion Count:", inversion_count)
+
+# Recording the end time
+end_time = time.time()
+
+# Calculating the total runtime
+total_runtime = end_time - start_time
+
+# Printing the total runtime
+print(f"Total runtime: {total_runtime} seconds")
